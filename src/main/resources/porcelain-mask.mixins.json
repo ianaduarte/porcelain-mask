@@ -1,0 +1,21 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "one.ianthe.porcelain_mask.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"reach.ItemMixin",
+		"reach.PlayerMixin",
+		"reach.ServerGamePacketListenerImplMixin",
+		"reach.ServerPlayerGameModeMixin",
+		"sweeping.PlayerMixin"
+	],
+	"client": [
+		"contextual_model.ItemRendererMixin",
+		"reach.GameRendererMixin",
+		"reach.MultiPlayerGameModeMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -1,7 +1,9 @@
+![Drag Racing](./src/main/resources/assets/porcelain-mask/icon.png)
 # Porcelain Mask
-### Library for all my mods.
+**Library for my mods.**
 <hr>
-<br>
+
+
 
 **Enables doing things such as:**
 * Changing player reach with specific items.

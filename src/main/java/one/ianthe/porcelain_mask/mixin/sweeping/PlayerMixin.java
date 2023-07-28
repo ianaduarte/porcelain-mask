@@ -24,7 +24,7 @@ public abstract class PlayerMixin extends LivingEntity{
 		),
 		ordinal = 3
 	)
-	private boolean sweepMixin(boolean value){
+	private boolean porcelain_mask$sweepMixin(boolean value){
 		if(getMainHandItem().getItem() instanceof ISweeping){
 			return true;
 		}

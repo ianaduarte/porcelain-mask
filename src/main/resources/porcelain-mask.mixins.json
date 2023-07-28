@@ -12,6 +12,11 @@
 	],
 	"client": [
 		"contextual_model.ItemRendererMixin",
+		"arm_posing_models.BlockModelDeserializerMixin",
+		"arm_posing_models.BlockModelMixin",
+		"arm_posing_models.HumanoidModelMixin",
+		"arm_posing_models.ItemModelGeneratorMixin",
+		"arm_posing_models.PosingModelMixin",
 		"reach.GameRendererMixin",
 		"reach.MultiPlayerGameModeMixin"
 	],

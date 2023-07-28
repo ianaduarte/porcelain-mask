@@ -9,17 +9,17 @@ public class ArmPose{
 	private final float SWING_YAW_FACTOR;
 	private final float SWING_PITCH_FACTOR;
 	private final float SWING_ROLL_FACTOR;
-	private final boolean FOLLOW_VIEW;
+	private final boolean FOLLOW_HEAD;
 	private final boolean IGNORE_BOBBING;
 	
-	public ArmPose(float yaw, float pitch, float roll, float swingYawFactor, float swingPitchFactor, float swingRollFactor, boolean followView, boolean ignoreBobbing){
+	public ArmPose(float yaw, float pitch, float roll, float swingYawFactor, float swingPitchFactor, float swingRollFactor, boolean followHead, boolean ignoreBobbing){
 		this.YAW = yaw;
 		this.PITCH = pitch;
 		this.ROLL = roll;
 		this.SWING_YAW_FACTOR = swingYawFactor;
 		this.SWING_PITCH_FACTOR = swingPitchFactor;
 		this.SWING_ROLL_FACTOR = swingRollFactor;
-		this.FOLLOW_VIEW = followView;
+		this.FOLLOW_HEAD = followHead;
 		this.IGNORE_BOBBING = ignoreBobbing;
 	}
 	
@@ -43,10 +43,10 @@ public class ArmPose{
 		return SWING_ROLL_FACTOR;
 	}
 	
-	public boolean followsView(){
-		return FOLLOW_VIEW;
+	public boolean followsHead(){
+		return FOLLOW_HEAD;
 	}
-	public boolean getIgnoresBobbing(){
+	public boolean ignoresBobbing(){
 		return IGNORE_BOBBING;
 	}
 	
@@ -58,7 +58,7 @@ public class ArmPose{
 		float swingYawFactor    = (json.get("swing_yaw_factor")   != null)? json.get("swing_yaw_factor").getAsFloat()   : 1.0f;
 		float swingPitchFactor  = (json.get("swing_pitch_factor") != null)? json.get("swing_pitch_factor").getAsFloat() : 1.0f;
 		float swingRollFactor   = (json.get("swing_roll_factor")  != null)? json.get("swing_roll_factor").getAsFloat()  : 1.0f;
-		boolean followView = json.get("follow_view") != null && json.get("follow_view").getAsBoolean();
+		boolean followView = json.get("follow_head") != null && json.get("follow_head").getAsBoolean();
 		boolean ignoreBobbing = json.get("ignore_bobbing") != null && json.get("ignore_bobbing").getAsBoolean();
 		
 		return new ArmPose(
@@ -70,6 +70,18 @@ public class ArmPose{
 			swingRollFactor,
 			followView,
 			ignoreBobbing
+		);
+	}
+	public ArmPose mirror(){
+		return new ArmPose(
+			-YAW,
+			PITCH,
+			-ROLL,
+			SWING_YAW_FACTOR,
+			SWING_PITCH_FACTOR,
+			SWING_ROLL_FACTOR,
+			FOLLOW_HEAD,
+			IGNORE_BOBBING
 		);
 	}
 }

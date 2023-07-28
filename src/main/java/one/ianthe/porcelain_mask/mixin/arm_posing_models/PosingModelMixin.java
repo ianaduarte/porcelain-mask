@@ -16,38 +16,50 @@ public class PosingModelMixin implements IArmPosing{
 	@Unique private ArmPose rightOffPose;
 	
 	@Override
-	public ArmPose[] getMainPoses(){
-		return new ArmPose[]{leftMainPose, rightMainPose};
+	public ArmPose[] getInMainhandPoses(boolean leftHanded){
+		if(leftHanded){
+			return new ArmPose[]{
+				leftMainPose  != null? leftMainPose.mirror() : null,
+				rightMainPose != null? rightMainPose.mirror() : null
+			};
+		}
+		return new ArmPose[]{rightMainPose, leftMainPose};
 	}
 	@Override
-	public ArmPose[] getOffPoses(){
-		return new ArmPose[]{leftOffPose, rightOffPose};
+	public ArmPose[] getInOffhandPoses(boolean leftHanded){
+		if(leftHanded){
+			return new ArmPose[]{
+				(leftOffPose  != null)? leftOffPose.mirror()  : null,
+				(rightOffPose != null)? rightOffPose.mirror() : null
+			};
+		}
+		return new ArmPose[]{rightOffPose, leftOffPose};
 	}
 	
 	@Override
 	public void setFromJson(JsonObject json){
-		if(json.has("main_hand")){
-			JsonObject mainHand = json.getAsJsonObject("main_hand");
+		if(json.has("in_mainhand")){
+			JsonObject mainHand = json.getAsJsonObject("in_mainhand");
 			
-			if(mainHand.has("left")) this.leftMainPose = ArmPose.fromJson(mainHand.getAsJsonObject("left"));
-			if(mainHand.has("right")) this.rightMainPose = ArmPose.fromJson(mainHand.getAsJsonObject("right"));
+			if(mainHand.has("mainhand")) this.rightMainPose = ArmPose.fromJson(mainHand.getAsJsonObject("mainhand"));
+			if(mainHand.has("offhand" )) this.leftMainPose  = ArmPose.fromJson(mainHand.getAsJsonObject("offhand" ));
 		}
-		if(json.has("offhand")){
-			JsonObject offhand = json.getAsJsonObject("offhand");
+		if(json.has("in_offhand")){
+			JsonObject offhand = json.getAsJsonObject("in_offhand");
 			
-			if(offhand.has("left")) this.leftOffPose = ArmPose.fromJson(offhand.getAsJsonObject("left"));
-			if(offhand.has("right")) this.rightOffPose = ArmPose.fromJson(offhand.getAsJsonObject("right"));
+			if(offhand.has("mainhand")) this.rightOffPose = ArmPose.fromJson(offhand.getAsJsonObject("mainhand"));
+			if(offhand.has("offhand" )) this.leftOffPose  = ArmPose.fromJson(offhand.getAsJsonObject("offhand" ));
 		}
 	}
 	
 	@Override
 	public void setFromOther(IArmPosing other){
-		ArmPose[] otherMain = other.getMainPoses();
-		ArmPose[] otherOff = other.getOffPoses();
-		this.leftMainPose = otherMain[0];
-		this.leftOffPose = otherOff[0];
-		this.rightMainPose = otherMain[1];
-		this.rightOffPose = otherOff[1];
+		ArmPose[] otherMain = other.getInMainhandPoses(false);
+		ArmPose[] otherOff  = other.getInOffhandPoses(false);
+		this.rightMainPose  = otherMain[0];
+		this.rightOffPose   = otherOff[0];
+		this.leftMainPose   = otherMain[1];
+		this.leftOffPose    = otherOff[1];
 	}
 	
 	@Override

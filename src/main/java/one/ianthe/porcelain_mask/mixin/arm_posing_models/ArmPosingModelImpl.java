@@ -26,7 +26,10 @@ public class ArmPosingModelImpl implements ArmPosingModel{
 	
 	@Override
 	public ArmPose getInMainhandRight(boolean leftHanded){
-		if(leftHanded) return getInMainhandLeft(false).mirror();
+		if(leftHanded){
+			ArmPose oppositePose = getInMainhandLeft(false);
+			return oppositePose == null? null : oppositePose.mirror();
+		}
 		
 		if(inMainhandRight == null && getParent() != null){
 			return getParent().getInMainhandRight(false);
@@ -36,7 +39,10 @@ public class ArmPosingModelImpl implements ArmPosingModel{
 	
 	@Override
 	public ArmPose getInMainhandLeft(boolean leftHanded){
-		if(leftHanded) return getInMainhandRight(false).mirror();
+		if(leftHanded){
+			ArmPose oppositePose = getInMainhandRight(false);
+			return oppositePose == null? null : oppositePose.mirror();
+		}
 		
 		if(inMainhandLeft == null && getParent() != null){
 			return getParent().getInMainhandLeft(false);
@@ -46,7 +52,10 @@ public class ArmPosingModelImpl implements ArmPosingModel{
 	
 	@Override
 	public ArmPose getInOffhandRight(boolean leftHanded){
-		if(leftHanded) return getInOffhandLeft(false).mirror();
+		if(leftHanded){
+			ArmPose oppositePose = getInOffhandLeft(false);
+			return oppositePose == null? null : oppositePose.mirror();
+		}
 		
 		if(inOffhandRight == null && getParent() != null){
 			return getParent().getInOffhandRight(false);
@@ -56,7 +65,10 @@ public class ArmPosingModelImpl implements ArmPosingModel{
 	
 	@Override
 	public ArmPose getInOffhandLeft(boolean leftHanded){
-		if(leftHanded) return getInOffhandRight(false).mirror();
+		if(leftHanded){
+			ArmPose oppositePose = getInOffhandRight(false);
+			return oppositePose == null? null : oppositePose.mirror();
+		}
 		
 		if(inOffhandLeft == null && getParent() != null){
 			return getParent().getInOffhandLeft(false);

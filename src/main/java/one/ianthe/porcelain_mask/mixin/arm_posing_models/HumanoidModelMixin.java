@@ -7,13 +7,13 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.ItemModelShaper;
+import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import one.ianthe.porcelain_mask.PorcelainMask;
+import one.ianthe.porcelain_mask.PorcelainUtil;
 import one.ianthe.porcelain_mask.model.ArmPose;
-import one.ianthe.porcelain_mask.model.IArmPosing;
+import one.ianthe.porcelain_mask.model.ArmPosingModel;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,49 +31,75 @@ public abstract class HumanoidModelMixin<E extends Entity> extends EntityModel<E
 	@Shadow @Final public ModelPart rightArm;
 	@Shadow @Final public ModelPart leftArm;
 	
-	@Unique private float leftSwingYawFactor    = Float.NaN;
-	@Unique private float leftSwingPitchFactor  = Float.NaN;
-	@Unique private float leftSwingRollFactor   = Float.NaN;
-	@Unique private float rightSwingYawFactor   = Float.NaN;
-	@Unique private float rightSwingPitchFactor = Float.NaN;
-	@Unique private float rightSwingRollFactor  = Float.NaN;
+	@Unique private float leftSwingYawFactor    = 1.0f;
+	@Unique private float leftSwingPitchFactor  = 1.0f;
+	@Unique private float leftSwingRollFactor   = 1.0f;
+	@Unique private float rightSwingYawFactor   = 1.0f;
+	@Unique private float rightSwingPitchFactor = 1.0f;
+	@Unique private float rightSwingRollFactor  = 1.0f;
 	
 	@Unique private boolean leftIgnoresBobbing  = false;
 	@Unique private boolean rightIgnoresBobbing = false;
 	
+	@Unique private ArmPosingModel mainHandModel;
+	@Unique private ArmPosingModel offhandModel;
+	
+	@Inject(
+		method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V",
+		at = @At("HEAD")
+	)
+	private <T extends LivingEntity> void updateArmPosingModels(
+		T entity,
+		float limbSwing, float limbSwingAmount,
+		float ageInTicks,
+		float netHeadYaw, float headPitch,
+		CallbackInfo ci)
+	{
+		ItemModelShaper models  = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
+		if(models.getItemModel(entity.getMainHandItem()) instanceof SimpleBakedModel){
+			mainHandModel = (ArmPosingModel) models.getItemModel(entity.getMainHandItem());
+		}else{
+			mainHandModel = ArmPosingModel.EMPTY;
+		}
+		
+		if(models.getItemModel(entity.getOffhandItem()) instanceof SimpleBakedModel){
+			offhandModel = (ArmPosingModel) models.getItemModel(entity.getOffhandItem());
+		}else{
+			offhandModel = ArmPosingModel.EMPTY;
+		}
+	}
+	
+	//posing
 	@Inject(
 		method = "poseRightArm",
 		at = @At("TAIL"),
 		cancellable = true
 	)
-	private <T extends LivingEntity> void porcelain_mask$poseRightArmMixin(T livingEntity, CallbackInfo ci){
-		ItemModelShaper models  = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
-		IArmPosing mainModel    = (IArmPosing) models.getItemModel(livingEntity.getMainHandItem());
-		IArmPosing offModel     = (IArmPosing) models.getItemModel(livingEntity.getOffhandItem());
-		
-		if(mainModel.hasPoses() || offModel.hasPoses()){
-			boolean leftHanded = isLeftHanded(livingEntity);
-			ArmPose pose = (mainModel.hasPoses())? mainModel.getInMainhandPoses(leftHanded)[0] : offModel.getInOffhandPoses(leftHanded)[0];
+	private <T extends LivingEntity> void poseRightArmMixin(T livingEntity, CallbackInfo ci){
+		if(mainHandModel.hasPoses(true) || offhandModel.hasPoses(true)){
+			boolean leftHanded = PorcelainUtil.isLeftHanded(livingEntity);
+			ArmPose pose = (mainHandModel.hasPoses(true))? mainHandModel.getInMainhandRight(leftHanded) : offhandModel.getInOffhandRight(leftHanded);
 			
 			if(pose != null){
-				float xRot = pose.followsHead()? head.xRot : 0;
-				float yRot = pose.followsHead()? head.yRot : 0;
+				float xRot = head.xRot * pose.getHeadPitchFactor();
+				float yRot = PorcelainUtil.angleDifference(body.yRot, head.yRot) * pose.getHeadYawFactor();
 				rightArm.xRot = pose.getPitch() + xRot;
 				rightArm.yRot = pose.getYaw() + yRot;
 				rightArm.zRot = pose.getRoll();
 				
-				rightSwingYawFactor   = pose.getSwingYawFactor();
+				rightSwingYawFactor = pose.getSwingYawFactor();
 				rightSwingPitchFactor = pose.getSwingPitchFactor();
-				rightSwingRollFactor  = pose.getSwingRollFactor();
-				rightIgnoresBobbing   = pose.ignoresBobbing();
+				rightSwingRollFactor = pose.getSwingRollFactor();
+				
+				rightIgnoresBobbing = pose.ignoresBobbing();
 				ci.cancel();
 				return;
 			}
 		}
 		
-		rightSwingYawFactor   = Float.NaN;
-		rightSwingPitchFactor = Float.NaN;
-		rightSwingRollFactor  = Float.NaN;
+		rightSwingYawFactor   = 1.0f;
+		rightSwingPitchFactor = 1.0f;
+		rightSwingRollFactor  = 1.0f;
 		rightIgnoresBobbing   = false;
 	}
 	@Inject(
@@ -81,37 +107,57 @@ public abstract class HumanoidModelMixin<E extends Entity> extends EntityModel<E
 		at = @At("TAIL"),
 		cancellable = true
 	)
-	private <T extends LivingEntity> void porcelain_mask$poseLeftArmMixin(T livingEntity, CallbackInfo ci){
-		ItemModelShaper models  = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
-		IArmPosing mainModel    = (IArmPosing) models.getItemModel(livingEntity.getMainHandItem());
-		IArmPosing offModel     = (IArmPosing) models.getItemModel(livingEntity.getOffhandItem());
-		
-		if(mainModel.hasPoses() || offModel.hasPoses()){
-			boolean leftHanded = isLeftHanded(livingEntity);
-			ArmPose pose = (mainModel.hasPoses())? mainModel.getInMainhandPoses(leftHanded)[1] : offModel.getInOffhandPoses(leftHanded)[1];
+	private <T extends LivingEntity> void poseLeftArmMixin(T livingEntity, CallbackInfo ci){
+		if(mainHandModel.hasPoses(true) || offhandModel.hasPoses(true)){
+			boolean leftHanded = PorcelainUtil.isLeftHanded(livingEntity);
+			ArmPose pose = (mainHandModel.hasPoses(true))? mainHandModel.getInMainhandLeft(leftHanded) : offhandModel.getInOffhandLeft(leftHanded);
 			
 			if(pose != null){
-				float xRot = pose.followsHead()? head.xRot : 0;
-				float yRot = pose.followsHead()? head.yRot : 0;
+				float xRot = head.xRot * pose.getHeadPitchFactor();
+				float yRot = PorcelainUtil.angleDifference(body.yRot, head.yRot) * pose.getHeadYawFactor();
 				leftArm.xRot = pose.getPitch() + xRot;
 				leftArm.yRot = pose.getYaw() + yRot;
 				leftArm.zRot = pose.getRoll();
-				leftSwingYawFactor   = pose.getSwingYawFactor();
+				
+				leftSwingYawFactor = pose.getSwingYawFactor();
 				leftSwingPitchFactor = pose.getSwingPitchFactor();
-				leftSwingRollFactor  = pose.getSwingRollFactor();
-				leftIgnoresBobbing   = pose.ignoresBobbing();
+				leftSwingRollFactor = pose.getSwingRollFactor();
+				
+				leftIgnoresBobbing = pose.ignoresBobbing();
 				ci.cancel();
 				return;
 			}
 		}
-		leftSwingYawFactor   = Float.NaN;
-		leftSwingPitchFactor = Float.NaN;
-		leftSwingRollFactor  = Float.NaN;
+		leftSwingYawFactor   = 1.0f;
+		leftSwingPitchFactor = 1.0f;
+		leftSwingRollFactor  = 1.0f;
 		leftIgnoresBobbing   = false;
 	}
 	
-	
 	//swinging
+	@Inject(
+		method = "setupAttackAnimation",
+		at = @At("TAIL"),
+		cancellable = true
+	)
+	private <T extends LivingEntity> void doubleSwing(T livingEntity, float ageInTicks, CallbackInfo ci, @Local(ordinal = 1) float g, @Local(ordinal = 2) float h){
+		if(this.attackTime <= 0.0F || !(mainHandModel.mainhandSwingsBoth() || offhandModel.offhandSwingsBoth())){
+			ci.cancel();
+			return;
+		}
+		
+		ModelPart m = PorcelainUtil.isLeftHanded(livingEntity)? rightArm : leftArm;
+		float xFactor = PorcelainUtil.isLeftHanded(livingEntity)? rightSwingPitchFactor : leftSwingPitchFactor;
+		float yFactor = PorcelainUtil.isLeftHanded(livingEntity)? rightSwingYawFactor : leftSwingYawFactor;
+		float zFactor = PorcelainUtil.isLeftHanded(livingEntity)? rightSwingRollFactor : leftSwingRollFactor;
+		
+		if((mainHandModel.mainhandSwingsBoth()) || (offhandModel.offhandSwingsBoth())){
+			m.xRot -= (g * 1.2F + h) * xFactor;
+			m.yRot += (body.yRot * 2.0F) * yFactor;
+			m.zRot -= (Mth.sin(attackTime * (float) Math.PI) * 0.4F) * zFactor;
+		}
+	}
+	
 	@Redirect(
 		method = "setupAttackAnimation",
 		at = @At(
@@ -121,14 +167,9 @@ public abstract class HumanoidModelMixin<E extends Entity> extends EntityModel<E
 			ordinal = 1
 		)
 	)
-	private <T extends LivingEntity> void porcelain_mask$attackXRotMixin(ModelPart instance, float value, @Local(ordinal = 0) T livingEntity, @Local(ordinal = 1) float g, @Local(ordinal = 2) float h){
-		HumanoidArm humanoidArm = getAttackArm(livingEntity);
-		float factor = (humanoidArm == HumanoidArm.LEFT)? leftSwingPitchFactor : rightSwingPitchFactor;
-		if(!Float.isNaN(factor)){
-			instance.xRot -= (g * 1.2F + h) * factor;
-			return;
-		}
-		instance.xRot = value;
+	private <T extends LivingEntity> void attackXRotMixin(ModelPart instance, float value, @Local(ordinal = 0) T livingEntity, @Local(ordinal = 1) float g, @Local(ordinal = 2) float h){
+		float factor = PorcelainUtil.isLeftHanded(livingEntity)? leftSwingPitchFactor : rightSwingPitchFactor;
+		instance.xRot -= (g * 1.2F + h) * factor;
 	}
 	
 	@Redirect(
@@ -140,15 +181,9 @@ public abstract class HumanoidModelMixin<E extends Entity> extends EntityModel<E
 			ordinal = 4
 		)
 	)
-	private <T extends LivingEntity> void porcelain_mask$attackYRotMixin(ModelPart instance, float value, @Local(ordinal = 0) T livingEntity){
-		HumanoidArm humanoidArm = getAttackArm(livingEntity);
-		float factor = (humanoidArm == HumanoidArm.LEFT)? leftSwingYawFactor : rightSwingYawFactor;
-		
-		if(!Float.isNaN(factor)){
-			instance.yRot += (body.yRot * 2.0F) * factor;
-			return;
-		}
-		instance.yRot = value;
+	private <T extends LivingEntity> void attackYRotMixin(ModelPart instance, float value, @Local(ordinal = 0) T livingEntity){
+		float factor = PorcelainUtil.isLeftHanded(livingEntity)? leftSwingYawFactor : rightSwingYawFactor;
+		instance.yRot += (body.yRot * 2.0F) * factor;
 	}
 	
 	@Redirect(
@@ -160,16 +195,10 @@ public abstract class HumanoidModelMixin<E extends Entity> extends EntityModel<E
 			ordinal = 0
 		)
 	)
-	private <T extends LivingEntity> void porcelain_mask$attackZRotMixin(ModelPart instance, float value, @Local(ordinal = 0) T livingEntity){
-		HumanoidArm humanoidArm = getAttackArm(livingEntity);
-		float factor = (humanoidArm == HumanoidArm.LEFT)? leftSwingRollFactor : rightSwingRollFactor;
-		if(!Float.isNaN(factor)){
-			instance.zRot -= (Mth.sin(attackTime * (float) Math.PI) * 0.4F) * factor;
-			return;
-		}
-		instance.zRot = value;
+	private <T extends LivingEntity> void attackZRotMixin(ModelPart instance, float value, @Local(ordinal = 0) T livingEntity){
+		float factor = PorcelainUtil.isLeftHanded(livingEntity)? leftSwingRollFactor : rightSwingRollFactor;
+		instance.zRot -= (Mth.sin(attackTime * (float) Math.PI) * 0.4F) * factor;
 	}
-	
 	
 	//bobbing
 	@Redirect(
@@ -180,7 +209,7 @@ public abstract class HumanoidModelMixin<E extends Entity> extends EntityModel<E
 			ordinal = 0
 		)
 	)
-	private void porcelain_mask$disableRightArmBobbing(ModelPart arm, float ageInTicks, float multiplier){
+	private void disableRightArmBobbing(ModelPart arm, float ageInTicks, float multiplier){
 		if(!rightIgnoresBobbing){
 			AnimationUtils.bobModelPart(arm, ageInTicks, multiplier);
 		}
@@ -194,16 +223,9 @@ public abstract class HumanoidModelMixin<E extends Entity> extends EntityModel<E
 			ordinal = 1
 		)
 	)
-	private void porcelain_mask$disableLeftArmBobbing(ModelPart arm, float ageInTicks, float multiplier){
+	private void disableLeftArmBobbing(ModelPart arm, float ageInTicks, float multiplier){
 		if(!leftIgnoresBobbing){
 			AnimationUtils.bobModelPart(arm, ageInTicks, multiplier);
 		}
 	}
-	@Unique
-	private <T extends LivingEntity> boolean isLeftHanded(T livingEntity){
-		return livingEntity.getMainArm() != HumanoidArm.RIGHT;
-	}
-	
-	@Shadow
-	protected abstract <T extends LivingEntity> HumanoidArm getAttackArm(T entity);
 }

@@ -8,6 +8,6 @@ import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 public class PorcelainMaskClient implements ClientModInitializer{
 	@Override
 	public void onInitializeClient(ModContainer mod){
-		ModelLoadingRegistry.INSTANCE.registerModelProvider(new ContextualModelProvider());
+		ModelLoadingRegistry.INSTANCE.registerModelProvider(new SpecialModelProvider());
 	}
 }

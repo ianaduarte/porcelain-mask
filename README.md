@@ -3,9 +3,16 @@
 **Library for my mods.**
 <hr>
 
-
-
 **Enables doing things such as:**
+
+(Client-side):
+* .json based:
+* Changing item model based on rendering context (GUI, third-person, etc...)
+* Changing arm pose when holding an item. (think vindicator holding an axe.)
+* Changing arm swing when holding an item.
+
+<br>
+
+(Server-side):
 * Changing player reach with specific items.
-* Having different models for a single item. (GUI, Main-Hand, Offhand, etc...)
 * Enabling *"Sweep"* attacks on specific items.

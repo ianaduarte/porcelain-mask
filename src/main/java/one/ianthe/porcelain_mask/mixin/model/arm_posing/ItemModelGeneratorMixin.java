@@ -1,4 +1,4 @@
-package one.ianthe.porcelain_mask.mixin.arm_posing_models;
+package one.ianthe.porcelain_mask.mixin.model.arm_posing;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -10,18 +10,15 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ItemModelGenerator.class)
 public class ItemModelGeneratorMixin{
-	@ModifyReturnValue(
-		method = "generateBlockModel",
-		at = @At(value = "RETURN", ordinal = 0)
-	)
+	@ModifyReturnValue(method = "generateBlockModel", at = @At(value = "RETURN", ordinal = 0))
 	public BlockModel porcelain_mask$generateBlockModel(BlockModel original, @Local(ordinal = 0) BlockModel model){
-		ArmPosingModel armPosing = (ArmPosingModel) model;
+		ArmPosingModel armPosing = (ArmPosingModel)model;
 		
 		if(armPosing.hasPoses(true)){
-			ArmPosingModel originalArmPosing = (ArmPosingModel) original;
-			originalArmPosing.fromOther(armPosing);
+			ArmPosingModel originalArmPosing = (ArmPosingModel)original;
+			originalArmPosing.setFromOther(armPosing);
 			
-			return (BlockModel) originalArmPosing;
+			return (BlockModel)originalArmPosing;
 		}
 		return original;
 	}

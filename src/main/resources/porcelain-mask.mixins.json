@@ -4,29 +4,15 @@
 	"package": "one.ianthe.porcelain_mask.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"arm_posing_models.HumanoidModelMixin",
-		"reach.ItemMixin",
-		"reach.PlayerMixin",
-		"reach.ServerGamePacketListenerImplMixin",
-		"reach.ServerPlayerGameModeMixin",
-		"sweeping.PlayerMixin"
 	],
 	"client": [
-		"arm_posing_models.ArmPosingModelImpl",
-		"arm_posing_models.BlockModelDeserializerMixin",
-		"arm_posing_models.BlockModelMixin",
-		"arm_posing_models.BlockModelParentGetterImpl",
-		"arm_posing_models.HumanoidModelMixin",
-		"arm_posing_models.ItemInHandLayerMixin",
-		"arm_posing_models.ItemModelGeneratorMixin",
-		"contextual_model.BlockModelDeserializerMixin",
-		"contextual_model.BlockModelMixin",
-		"contextual_model.ContextualModelImpl",
-		"contextual_model.ItemModelGeneratorMixin",
-		"contextual_model.ItemRendererMixin",
-		"contextual_model.ModelManagerMixin",
-		"reach.GameRendererMixin",
-		"reach.MultiPlayerGameModeMixin"
+		"model.BlockModelAccessor",
+		"model.arm_posing.ArmPosingModelImpl",
+		"model.arm_posing.BlockModelDeserializerMixin",
+		"model.arm_posing.BlockModelMixin",
+		"model.arm_posing.HumanoidModelMixin",
+		"model.arm_posing.ItemInHandLayerMixin",
+		"model.arm_posing.ItemModelGeneratorMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

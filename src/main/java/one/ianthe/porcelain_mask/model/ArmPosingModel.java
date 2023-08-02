@@ -1,47 +1,49 @@
 package one.ianthe.porcelain_mask.model;
 
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 
 public interface ArmPosingModel{
 	ArmPosingModel EMPTY = new ArmPosingModel(){
-		@Override public ArmPose getInMainhandRight(boolean leftHanded){return null;}
-		
-		@Override public ArmPose getInMainhandLeft(boolean leftHanded){return null;}
-		
-		@Override public ArmPose getInOffhandRight(boolean leftHanded){return null;}
-		
-		@Override public ArmPose getInOffhandLeft(boolean leftHanded){return null;}
-		
-		@Override public boolean mainhandSwingsBoth(){return false;}
-		
-		@Override public boolean offhandSwingsBoth(){return false;}
-		
-		@Override public boolean hidesOffhandItem(){return false;}
-		
-		@Override public boolean hasPoses(boolean includeParents){return false;}
-		
-		@Override public void fromJson(JsonObject jsonObject){}
-		
-		@Override public void fromOther(ArmPosingModel other){}
-		
 		@Override public ArmPosingModel getParent(){return null;}
+		
+		@Override public ModelPartPose getPose(HoldingContext context, boolean leftHanded){return null;}
+		@Override public ModelPartSwing getSwing(HoldingContext context, boolean leftHanded){return null;}
+		
+		@Override public Float getBobbingMultiplier(HoldingContext context, boolean leftHanded){return 0f;}
+		
+		@Override public boolean hasPoses(){return false;}
+		@Override public boolean hasPoses(boolean includeAncestors){return false;}
+		
+		@Override public boolean hasCustomMainhandSwings(){return false;}
+		@Override public boolean hasCustomOffhandSwing(){return false;}
+		
+		@Override public boolean hasCustomMainhandBobbing(){return false;}
+		@Override public boolean hasCustomOffhandBobbing(){return false;}
+		
+		@Override public Boolean hidesOffhandItem(){return false;}
+		
+		@Override public void setFromJson(JsonObject json){}
+		
+		@Override public void setFromOther(ArmPosingModel other){}
 	};
 	
-	ArmPose getInMainhandRight(boolean leftHanded);
-	ArmPose getInMainhandLeft(boolean leftHanded);
-	ArmPose getInOffhandRight(boolean leftHanded);
-	ArmPose getInOffhandLeft(boolean leftHanded);
-	
-	boolean mainhandSwingsBoth();
-	boolean offhandSwingsBoth();
-	
-	boolean hidesOffhandItem();
-	boolean hasPoses(boolean includeParents);
-	
-	
-	void fromJson(JsonObject jsonObject);
-	void fromOther(ArmPosingModel other);
-	
 	ArmPosingModel getParent();
+	
+	ModelPartPose getPose(HoldingContext context, boolean leftHanded);
+	ModelPartSwing getSwing(HoldingContext context, boolean leftHanded);
+	Float getBobbingMultiplier(HoldingContext context, boolean leftHanded);
+	
+	boolean hasPoses();
+	boolean hasPoses(boolean includeAncestors);
+	
+	boolean hasCustomMainhandSwings();
+	boolean hasCustomOffhandSwing();
+	
+	boolean hasCustomMainhandBobbing();
+	boolean hasCustomOffhandBobbing();
+	
+	Boolean hidesOffhandItem();
+	
+	void setFromJson(JsonObject json);
+	void setFromOther(ArmPosingModel other);
 }

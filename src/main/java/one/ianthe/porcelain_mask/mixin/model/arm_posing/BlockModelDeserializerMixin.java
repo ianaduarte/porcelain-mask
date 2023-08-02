@@ -1,4 +1,4 @@
-package one.ianthe.porcelain_mask.mixin.arm_posing_models;
+package one.ianthe.porcelain_mask.mixin.model.arm_posing;
 
 import com.google.gson.JsonObject;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
@@ -10,16 +10,15 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(BlockModel.Deserializer.class)
 public class BlockModelDeserializerMixin{
-	@ModifyReturnValue(
-		method = "deserialize",
-		at = @At("RETURN")
-	)
-	public BlockModel porcelain_mask$deserializeMixin(BlockModel original, @Local(ordinal = 0)JsonObject jsonObject){
+	@ModifyReturnValue(method = "deserialize", at = @At("RETURN"))
+	public BlockModel deserializeArmPoser(BlockModel original, @Local(ordinal = 0) JsonObject jsonObject){
 		if(jsonObject.has("arm_poses")){
 			JsonObject armPoses = jsonObject.getAsJsonObject("arm_poses");
 			ArmPosingModel armPosing = (ArmPosingModel) original;
-			armPosing.fromJson(armPoses);
+			
+			armPosing.setFromJson(armPoses);
 		}
+		
 		return original;
 	}
 }

@@ -9,15 +9,15 @@ import one.ianthe.porcelain_mask.PorcelainUtil;
 public class ModelPartSwing{
 	public static final ModelPartSwing DEFAULT_MAINHAND = new ModelPartSwing(
 		ModelPartPose.EMPTY,
-		new SwingAxis(EasingType.VANILLA,  1.2f, true, true, true, true),
-		new SwingAxis(EasingType.VANILLA,    2f, true, true, true, true),
-		new SwingAxis(EasingType.VANILLA, -0.4f, true, true, true, true)
+		new SwingAxis(EasingType.VANILLA,  1.2f, true, true, 4, -1),
+		new SwingAxis(EasingType.VANILLA,    2f, true, true, -1, -1),
+		new SwingAxis(EasingType.VANILLA, -0.4f, true, true, -1, -1)
 	);
 	public static final ModelPartSwing DEFAULT_OFFHAND = new ModelPartSwing(
 		ModelPartPose.EMPTY,
-		new SwingAxis(EasingType.NONE, 0f, false, false, false, false),
-		new SwingAxis(EasingType.NONE, 0f, false, false, false, false),
-		new SwingAxis(EasingType.NONE, 0f, false, false, false, false)
+		new SwingAxis(EasingType.NONE, 0f, false, false, -1, -1),
+		new SwingAxis(EasingType.NONE, 0f, false, false, -1, -1),
+		new SwingAxis(EasingType.NONE, 0f, false, false, -1, -1)
 	);
 	
 	private final ModelPartPose POSE;
@@ -103,25 +103,25 @@ public class ModelPartSwing{
 	private static class SwingAxis{
 		EasingType easing;
 		float amount;
-		boolean inverted;
-		boolean invertedTwice;
-		boolean squared;
-		boolean squaredSquared;
+		boolean preInverted;
+		boolean postInverted;
+		float elevateTo;
+		float extractRoot;
 		
-		private SwingAxis(EasingType type, float amount, boolean inverted, boolean invertedTwice, boolean squared, boolean squaredSquared){
+		private SwingAxis(EasingType type, float amount, boolean preInverted, boolean postInverted, float elevateTo, float extractRoot){
 			this.easing = type;
 			this.amount = amount;
-			this.inverted = inverted;
-			this.invertedTwice = invertedTwice;
-			this.squared = squared;
-			this.squaredSquared = squaredSquared;
+			this.preInverted = preInverted;
+			this.postInverted = postInverted;
+			this.elevateTo = elevateTo;
+			this.extractRoot = extractRoot;
 		}
 		
 		float getValue(float delta){
-			if(this.invertedTwice) delta = 1 - delta;
-			if(this.squared) delta *= delta;
-			if(this.squaredSquared) delta *= delta;
-			if(this.inverted) delta = 1 - delta;
+			if(this.preInverted) delta = 1 - delta;
+			if(this.elevateTo > 0) delta = (float)Math.pow(delta, elevateTo);
+			if(this.extractRoot > 0) delta = (float)Math.pow(delta, 1 / extractRoot);
+			if(this.postInverted) delta = 1 - delta;
 			
 			return switch(this.easing){
 				case SINE -> Mth.sin(delta * Mth.PI);
@@ -137,11 +137,11 @@ public class ModelPartSwing{
 			EasingType type = EasingType.valueOf(GsonHelper.getAsString(json, "type", defaultEasingType).toUpperCase());
 			float amount = GsonHelper.getAsFloat(json, "amount", 45.0f) * Mth.DEG_TO_RAD;
 			boolean isInverted = GsonHelper.getAsBoolean(json, "inverted", false);
-			boolean isInvertedTwice = GsonHelper.getAsBoolean(json, "inverted_twice", false);
-			boolean isSquared = GsonHelper.getAsBoolean(json, "squared", false);
-			boolean isSquaredTwice = GsonHelper.getAsBoolean(json, "squared_twice", false);
+			boolean isUninverted = GsonHelper.getAsBoolean(json, "uninverted", false);
+			float elevateTo = GsonHelper.getAsFloat(json, "elevate_to", -1);
+			float extractRoot = GsonHelper.getAsFloat(json, "extract_root", -1);
 			
-			return new SwingAxis(type, amount, isInverted, isInvertedTwice, isSquared, isSquaredTwice);
+			return new SwingAxis(type, amount, isInverted, isUninverted, elevateTo, extractRoot);
 		}
 	}
 	

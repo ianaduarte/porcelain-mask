@@ -12,7 +12,13 @@
 		"model.arm_posing.BlockModelMixin",
 		"model.arm_posing.HumanoidModelMixin",
 		"model.arm_posing.ItemInHandLayerMixin",
-		"model.arm_posing.ItemModelGeneratorMixin"
+		"model.arm_posing.ItemModelGeneratorMixin",
+		
+		"model.contextual.ContextualModelImpl",
+		"model.contextual.BlockModelDeserializerMixin",
+		"model.contextual.BlockModelMixin",
+		"model.contextual.ItemRendererMixin",
+		"model.contextual.ItemModelGeneratorMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

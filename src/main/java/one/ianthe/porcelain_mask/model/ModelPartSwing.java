@@ -92,7 +92,6 @@ public class ModelPartSwing{
 	
 	public static ModelPartSwing fromJson(JsonObject json, boolean offhand){
 		ModelPartPose pose = ModelPartPose.fromJson(json);
-		//json.getAsJsonObject("swing_pitch")
 		SwingAxis xAxis = SwingAxis.fromJson(GsonHelper.getAsJsonObject(json, "swing_pitch", new JsonObject()), offhand? "none" : "vanilla");
 		SwingAxis yAxis = SwingAxis.fromJson(GsonHelper.getAsJsonObject(json, "swing_yaw", new JsonObject()), offhand? "none" : "vanilla");
 		SwingAxis zAxis = SwingAxis.fromJson(GsonHelper.getAsJsonObject(json, "swing_roll", new JsonObject()), offhand? "none" : "vanilla");
@@ -119,8 +118,8 @@ public class ModelPartSwing{
 		
 		float getValue(float delta){
 			if(this.preInverted) delta = 1 - delta;
-			if(this.elevateTo > 0) delta = (float)Math.pow(delta, elevateTo);
-			if(this.extractRoot > 0) delta = (float)Math.pow(delta, 1 / extractRoot);
+			if(this.elevateTo > 1) delta = (float)Math.pow(delta, elevateTo);
+			if(this.extractRoot > 1) delta = (float)Math.pow(delta, 1 / extractRoot);
 			if(this.postInverted) delta = 1 - delta;
 			
 			return switch(this.easing){

@@ -22,9 +22,9 @@ public interface ArmPosingModel{
 		
 		@Override public Boolean hidesOffhandItem(){return false;}
 		
-		@Override public void setFromJson(JsonObject json){}
+		@Override public void fromJson(JsonObject json){}
 		
-		@Override public void setFromOther(ArmPosingModel other){}
+		@Override public void fromOther(ArmPosingModel other){}
 	};
 	
 	ArmPosingModel getParent();
@@ -44,6 +44,6 @@ public interface ArmPosingModel{
 	
 	Boolean hidesOffhandItem();
 	
-	void setFromJson(JsonObject json);
-	void setFromOther(ArmPosingModel other);
+	void fromJson(JsonObject json);
+	void fromOther(ArmPosingModel other);
 }

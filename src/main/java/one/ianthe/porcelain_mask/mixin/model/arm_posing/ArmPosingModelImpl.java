@@ -129,7 +129,7 @@ public class ArmPosingModelImpl implements ArmPosingModel{
 	
 	
 	@Override
-	public void setFromJson(JsonObject json){
+	public void fromJson(JsonObject json){
 		hidesOffhandItem = (json.has("hide_offhand_item"))? json.get("hide_offhand_item").getAsBoolean() : null;
 		
 		if(json.has("in_mainhand")){
@@ -170,7 +170,7 @@ public class ArmPosingModelImpl implements ArmPosingModel{
 		}
 	}
 	@Override
-	public void setFromOther(ArmPosingModel other){
+	public void fromOther(ArmPosingModel other){
 		inMainhandRight = other.getPose(HoldingContext.MAINHAND_RIGHT,false);
 		inMainhandLeft  = other.getPose(HoldingContext.MAINHAND_LEFT,false);
 		

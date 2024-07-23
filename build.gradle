@@ -21,30 +21,34 @@ dependencies {
 	minecraft libs.minecraft
 	mappings loom.layered() {
 		officialMojangMappings()
-		parchment("org.parchmentmc.data:parchment-1.20.1:2023.07.23@zip")
+		parchment("org.parchmentmc.data:parchment-1.21:2024.07.07@zip")
 	}
 
 	modImplementation libs.quilt.loader
 	modImplementation libs.quilted.fabric.api
-	include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:0.2.0-beta.9")))
+	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.3.5")))
 }
 
 processResources {
 	inputs.property 'version', version
 
+	var identifier = project.properties['archives_base_name'].toString()
 	filesMatching('quilt.mod.json') {
-		expand 'version': version
+		expand 'id'     : identifier,
+				'Id'     : identifier.split("_").toList().stream().map((str) -> str[0].toUpperCase() + str.substring(1).toLowerCase()).toArray().join(""),
+				'version': version,
+				'group'  : project.properties['maven_group']
 	}
 }
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = 'UTF-8'
-	it.options.release = 17
+	it.options.release = 21
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {

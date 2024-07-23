@@ -24,8 +24,8 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "one.ianthe.porcelain_mask.PorcelainMask",
-			"client_init": "one.ianthe.porcelain_mask.client.PorcelainMaskClient"
+			"main": "one.ianthe.porcelain_mask.PorcelainMask::initialize",
+			"client": "one.ianthe.porcelain_mask.client.PorcelainMaskClient::initialize"
 		},
 		"depends": [
 			{

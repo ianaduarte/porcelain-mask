@@ -56,7 +56,7 @@ public class ContextualModelImpl implements ContextualModel{
 		for(ItemDisplayContext context : ItemDisplayContext.values()){
 			String name = context.getSerializedName();
 			
-			if(json.has(name))overrides.put(context, new ResourceLocation(json.get(name).getAsString()));
+			if(json.has(name))overrides.put(context, ResourceLocation.parse(json.get(name).getAsString()));
 		}
 		overrides.values().forEach(SpecialModelRegistry::registerModel);
 	}

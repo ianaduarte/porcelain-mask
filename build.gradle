@@ -51,12 +51,6 @@ java {
 	targetCompatibility = JavaVersion.VERSION_21
 }
 
-jar {
-	from('LICENSE') {
-		rename { "${it}_${base.archivesName.get()}" }
-	}
-}
-
 publishing {
 	publications {
 		mavenJava(MavenPublication) {

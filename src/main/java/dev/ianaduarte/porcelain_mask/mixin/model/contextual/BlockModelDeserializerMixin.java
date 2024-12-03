@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import dev.ianaduarte.porcelain_mask.PorcelainMask;
 import dev.ianaduarte.porcelain_mask.model.ContextualModel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

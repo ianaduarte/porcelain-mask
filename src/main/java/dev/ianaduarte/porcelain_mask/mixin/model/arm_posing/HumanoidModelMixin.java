@@ -12,7 +12,6 @@ import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import dev.ianaduarte.porcelain_mask.PorcelainMask;
 import dev.ianaduarte.porcelain_mask.PorcelainUtil;
 import dev.ianaduarte.porcelain_mask.model.ArmPosingModel;
 import dev.ianaduarte.porcelain_mask.model.HoldingContext;

@@ -1,4 +1,4 @@
-package one.ianthe.porcelain_mask;
+package dev.ianaduarte.porcelain_mask;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;

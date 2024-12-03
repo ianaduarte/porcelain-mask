@@ -1,4 +1,4 @@
-package one.ianthe.porcelain_mask.mixin.model;
+package dev.ianaduarte.porcelain_mask.mixin.model;
 
 import net.minecraft.client.renderer.block.model.BlockModel;
 import org.spongepowered.asm.mixin.Mixin;

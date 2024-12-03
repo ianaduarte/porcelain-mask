@@ -1,4 +1,4 @@
-package one.ianthe.porcelain_mask.model;
+package dev.ianaduarte.porcelain_mask.model;
 
 public enum HoldingContext{
 	MAINHAND_RIGHT,

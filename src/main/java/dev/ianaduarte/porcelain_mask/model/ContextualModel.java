@@ -1,4 +1,4 @@
-package one.ianthe.porcelain_mask.model;
+package dev.ianaduarte.porcelain_mask.model;
 
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;

@@ -1,63 +1,62 @@
 plugins {
+	id 'fabric-loom' version '1.8-SNAPSHOT'
 	id 'maven-publish'
-	alias libs.plugins.quilt.loom
 }
 
-base.archivesName = project.archives_base_name
-version = "$project.version+${libs.versions.minecraft.get()}"
+version = "${project.version}+${project.minecraft_version}"
 group = project.maven_group
+base { archivesName = project.archives_base_name }
 
 repositories {
-	maven {
-		name = 'ParchmentMC'
-		url = 'https://maven.parchmentmc.org'
-	}
-	maven {
-		url = "https://jitpack.io"
-	}
+	maven { name = 'ParchmentMC'; url = 'https://maven.parchmentmc.org' }
+	maven { url = "https://jitpack.io" }
 }
 
 dependencies {
-	minecraft libs.minecraft
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.layered() {
 		officialMojangMappings()
-		parchment("org.parchmentmc.data:parchment-1.21:2024.07.07@zip")
+		parchment("org.parchmentmc.data:parchment-1.21:2024.11.10@zip")
 	}
-
-	modImplementation libs.quilt.loader
-	modImplementation libs.quilted.fabric.api
-	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.3.5")))
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.1")))
 }
 
 processResources {
-	inputs.property 'version', version
-
-	var identifier = project.properties['archives_base_name'].toString()
-	filesMatching('quilt.mod.json') {
-		expand 'id'     : identifier,
-				'Id'     : identifier.split("_").toList().stream().map((str) -> str[0].toUpperCase() + str.substring(1).toLowerCase()).toArray().join(""),
-				'version': version,
-				'group'  : project.properties['maven_group']
+	inputs.property "version", project.version
+	
+	var identifier = project.archives_base_name
+	filesMatching("fabric.mod.json") {
+		expand 'id' : identifier,
+			'Id' : identifier.split("_").toList().stream().map((str) -> str[0].toUpperCase() + str.substring(1).toLowerCase()).toArray().join(""),
+			"version": project.version,
+			"group" : project.properties['maven_group']
 	}
 }
 
-tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = 'UTF-8'
-	it.options.release = 21
-}
+tasks.withType(JavaCompile).configureEach { it.options.release = 21 }
 
 java {
+	withSourcesJar()
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
 }
 
+jar {
+	from("LICENSE") {
+		rename { "${it}_${project.base.archivesName.get()}"}
+	}
+}
+
 publishing {
 	publications {
-		mavenJava(MavenPublication) {
+		create("mavenJava", MavenPublication) {
+			artifactId = project.archives_base_name
 			from components.java
 		}
 	}
-
+	
 	repositories {
 	}
 }

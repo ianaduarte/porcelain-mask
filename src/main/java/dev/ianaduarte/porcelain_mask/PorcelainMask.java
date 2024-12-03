@@ -1,4 +1,4 @@
-package one.ianthe.porcelain_mask;
+package dev.ianaduarte.porcelain_mask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

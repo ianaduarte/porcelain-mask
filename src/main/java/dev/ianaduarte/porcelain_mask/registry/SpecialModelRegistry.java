@@ -1,4 +1,4 @@
-package one.ianthe.porcelain_mask.registry;
+package dev.ianaduarte.porcelain_mask.registry;
 
 import net.minecraft.resources.ResourceLocation;
 

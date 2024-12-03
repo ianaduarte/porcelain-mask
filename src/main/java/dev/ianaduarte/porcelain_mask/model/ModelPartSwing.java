@@ -1,10 +1,10 @@
-package one.ianthe.porcelain_mask.model;
+package dev.ianaduarte.porcelain_mask.model;
 
 import com.google.gson.JsonObject;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
-import one.ianthe.porcelain_mask.PorcelainUtil;
+import dev.ianaduarte.porcelain_mask.PorcelainUtil;
 
 public class ModelPartSwing{
 	public static final ModelPartSwing DEFAULT_MAINHAND = new ModelPartSwing(

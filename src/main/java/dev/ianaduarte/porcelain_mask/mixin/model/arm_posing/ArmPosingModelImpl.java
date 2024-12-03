@@ -1,14 +1,14 @@
-package one.ianthe.porcelain_mask.mixin.model.arm_posing;
+package dev.ianaduarte.porcelain_mask.mixin.model.arm_posing;
 
 import com.google.gson.JsonObject;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.util.GsonHelper;
-import one.ianthe.porcelain_mask.model.HoldingContext;
-import one.ianthe.porcelain_mask.model.ModelPartPose;
-import one.ianthe.porcelain_mask.model.ArmPosingModel;
-import one.ianthe.porcelain_mask.mixin.model.BlockModelAccessor;
-import one.ianthe.porcelain_mask.model.ModelPartSwing;
+import dev.ianaduarte.porcelain_mask.model.HoldingContext;
+import dev.ianaduarte.porcelain_mask.model.ModelPartPose;
+import dev.ianaduarte.porcelain_mask.model.ArmPosingModel;
+import dev.ianaduarte.porcelain_mask.mixin.model.BlockModelAccessor;
+import dev.ianaduarte.porcelain_mask.model.ModelPartSwing;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 

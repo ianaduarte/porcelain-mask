@@ -1,9 +1,9 @@
-package one.ianthe.porcelain_mask.mixin.model.contextual;
+package dev.ianaduarte.porcelain_mask.mixin.model.contextual;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.BakedModel;
-import one.ianthe.porcelain_mask.model.ContextualModel;
+import dev.ianaduarte.porcelain_mask.model.ContextualModel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 

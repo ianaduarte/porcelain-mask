@@ -1,4 +1,4 @@
-package one.ianthe.porcelain_mask.mixin.model.arm_posing;
+package dev.ianaduarte.porcelain_mask.mixin.model.arm_posing;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
@@ -12,12 +12,12 @@ import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import one.ianthe.porcelain_mask.PorcelainMask;
-import one.ianthe.porcelain_mask.PorcelainUtil;
-import one.ianthe.porcelain_mask.model.ArmPosingModel;
-import one.ianthe.porcelain_mask.model.HoldingContext;
-import one.ianthe.porcelain_mask.model.ModelPartPose;
-import one.ianthe.porcelain_mask.model.ModelPartSwing;
+import dev.ianaduarte.porcelain_mask.PorcelainMask;
+import dev.ianaduarte.porcelain_mask.PorcelainUtil;
+import dev.ianaduarte.porcelain_mask.model.ArmPosingModel;
+import dev.ianaduarte.porcelain_mask.model.HoldingContext;
+import dev.ianaduarte.porcelain_mask.model.ModelPartPose;
+import dev.ianaduarte.porcelain_mask.model.ModelPartSwing;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

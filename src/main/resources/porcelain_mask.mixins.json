@@ -6,19 +6,13 @@
 	"mixins": [
 	],
 	"client": [
-		"model.BlockModelAccessor",
-		"model.arm_posing.ArmPosingModelImpl",
-		"model.arm_posing.BlockModelDeserializerMixin",
-		"model.arm_posing.BlockModelMixin",
-		"model.arm_posing.HumanoidModelMixin",
-		"model.arm_posing.ItemInHandLayerMixin",
-		"model.arm_posing.ItemModelGeneratorMixin",
-		
-		"model.contextual.ContextualModelImpl",
-		"model.contextual.BlockModelDeserializerMixin",
-		"model.contextual.BlockModelMixin",
-		"model.contextual.ItemRendererMixin",
-		"model.contextual.ItemModelGeneratorMixin"
+		"model.ArmedRenderStateMixin",
+		"model.ExtendedArmedRenderStateImpl",
+		"model.HumanoidModelMixin",
+		"model.ItemStackRenderStateAccessor",
+		"model.ItemStackRenderStateAccessor$LayerRenderStateAccessor",
+		"model.ModelWrapperMixin",
+		"model.UnbakedWrapperMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

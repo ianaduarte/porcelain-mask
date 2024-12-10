@@ -13,11 +13,11 @@
 	"icon": "assets/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"client": ["${group}.${id}.client.${Id}Client"]
+		"main": ["${group}.${id}.${Id}"]
 	},
 	"mixins": ["${id}.mixins.json"],
 	"depends": {
-		"minecraft": "~1.21.1",
+		"minecraft": "~${mcversion}",
 		"java": ">=21"
 	}
 }

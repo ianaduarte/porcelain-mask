@@ -9,7 +9,8 @@ import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(ArmedEntityRenderState.class)
 public class ExtendedArmedRenderStateImpl implements ExtendedArmedRenderState {
-	@Unique ArmPosingData leftData, rightData;
+	@Unique ArmPosingData leftData;
+	@Unique ArmPosingData rightData;
 	
 	@Override
 	public void setData(HumanoidArm arm, ArmPosingData data) {
@@ -22,6 +23,7 @@ public class ExtendedArmedRenderStateImpl implements ExtendedArmedRenderState {
 	}
 	@Override
 	public ArmPosingData getData(HumanoidArm arm) {
-		return (arm == HumanoidArm.RIGHT)? rightData : leftData;
+		ArmPosingData posingData = (arm == HumanoidArm.RIGHT)? rightData : leftData;
+		return (posingData == null)? ArmPosingData.EMPTY : posingData;
 	}
 }

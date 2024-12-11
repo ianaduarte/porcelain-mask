@@ -12,7 +12,10 @@ public class Expression {
 	public final String stringRep;
 	private final Node op;
 	
-	Expression(Map<String, Function> functions, Map<String, Double> variables, String stringRep, Node op) {
+	public static Expression ofNumber(double n) {
+		return new Expression(null, null, Double.toString(n), new NumNode(n));
+	}
+	public Expression(Map<String, Function> functions, Map<String, Double> variables, String stringRep, Node op) {
 		this.functions = functions;
 		this.variables = variables;
 		this.stringRep = stringRep;
@@ -21,7 +24,7 @@ public class Expression {
 	
 	public double evaluate() {
 		if(this.op == null) return 0;
-		return Expression.evaluate(this.variables, this.functions, this.op);
+		return this.op instanceof NumNode numOp? numOp.value : Expression.evaluate(this.variables, this.functions, this.op);
 	}
 	public static double evaluate(Map<String, Double> variables, Map<String, Function> functions, Node op) {
 		return switch(op) {
@@ -66,5 +69,9 @@ public class Expression {
 	
 	public String stringRep() {
 		return this.stringRep == null? "" : this.stringRep;
+	}
+	
+	public boolean isStatic() {
+		return this.op instanceof NumNode;
 	}
 }

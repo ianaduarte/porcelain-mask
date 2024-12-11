@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 public class ExtendedUnbakedCodec extends MapCodec<BlockModelWrapper.Unbaked> {
 	@Override
 	public <T> Stream<T> keys(DynamicOps<T> ops) {
-		throw new RuntimeException("unimplemented");
+		throw new RuntimeException("You should not EVER get this error");
 	}
 	//may god forgive my soul
 	@Override

@@ -6,6 +6,11 @@
 	"mixins": [
 	],
 	"client": [
+		"interp.EntityMixin",
+		"interp.EntityRendererMixin",
+		"interp.ExtRenderStateImpl",
+		"interp.InterpolatedModelMixin",
+		"interp.LivingEntityRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

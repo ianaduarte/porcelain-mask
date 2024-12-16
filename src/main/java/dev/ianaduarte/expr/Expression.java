@@ -2,7 +2,6 @@ package dev.ianaduarte.expr;
 
 import dev.ianaduarte.expr.ast.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class Expression {
@@ -82,5 +81,8 @@ public class Expression {
 	
 	public boolean isStatic() {
 		return this.op instanceof NumNode;
+	}
+	public boolean isEmpty() {
+		return this == EMPTY || this.op instanceof NumNode num && num.value == 0;
 	}
 }

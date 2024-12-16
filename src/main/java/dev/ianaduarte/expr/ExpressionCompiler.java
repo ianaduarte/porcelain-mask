@@ -21,10 +21,21 @@ public class ExpressionCompiler {
 	private Token lastToken;
 	
 	public ExpressionCompiler() {
-		variables = new HashSet<>(4);
-		constants = new HashMap<>(4);
-		functions = new HashMap<>(4);
+		this.variables = new HashSet<>(4);
+		this.constants = new HashMap<>(4);
+		this.functions = new HashMap<>(4);
 	}
+	public ExpressionCompiler(ExpressionCompiler other) {
+		this.variables = new HashSet<>(other.variables.size());
+		variables.addAll(other.variables);
+		
+		this.constants = new HashMap<>(other.constants.size());
+		constants.putAll(other.constants);
+		
+		this.functions = new HashMap<>(other.functions.size());
+		functions.putAll(other.functions);
+	}
+	
 	public boolean identifierRegistered(String name) {
 		return this.variables.contains(name) || this.functions.containsKey(name) || this.constants.containsKey(name);
 	}

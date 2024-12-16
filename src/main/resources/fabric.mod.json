@@ -12,6 +12,7 @@
 	"license": "ARR",
 	"icon": "assets/icon.png",
 	"environment": "*",
+	"accessWidener": "${id}.accesswidener",
 	"entrypoints": {
 		"main": ["${group}.${id}.${Id}"]
 	},

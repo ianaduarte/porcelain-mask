@@ -10,7 +10,13 @@
 		"interp.EntityRendererMixin",
 		"interp.ExtRenderStateImpl",
 		"interp.InterpolatedModelMixin",
-		"interp.LivingEntityRendererMixin"
+		"interp.LivingEntityRendererMixin",
+		"pose.ArmedRenderStateMixin",
+		"pose.HumanoidModelMixin",
+		"pose.ModelWrapperMixin",
+		"pose.StackRenderStateAccessor",
+		"pose.StackRenderStateAccessor$LayerRenderStateAccessor",
+		"pose.UnbakedWrapperMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

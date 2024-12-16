@@ -6,7 +6,7 @@
 	"description": "Extended resourcepack customizability.",
 	"authors": [ "ianaduarte" ],
 	"contact": {
-		"homepage": "https://modrinth.com/${id}",
+		"homepage": "https://modrinth.com/mod/${id}",
 		"sources": "https://github.com/ianaduarte/${id}"
 	},
 	"license": "ARR",

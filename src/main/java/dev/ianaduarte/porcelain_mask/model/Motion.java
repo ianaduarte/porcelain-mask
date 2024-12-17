@@ -9,19 +9,19 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 
 public record Motion(Expression x, Expression y, Expression z) {
 	public static final Motion EMPTY = new Motion(Expression.EMPTY, Expression.EMPTY, Expression.EMPTY);
 	
 	public boolean isStatic() {
-		return x.isStatic() && y.isStatic() && z.isStatic();
+		return x.isConstant() && y.isConstant() && z.isConstant();
 	}
 	public boolean isEmpty() {
 		return this == EMPTY || (x.isEmpty() && y.isEmpty() && z.isEmpty());
 	}
-	public Vec3 toVec3(Function<Double, Double> transformer) {
+	public Vec3 toVec3(UnaryOperator<Double> transformer) {
 		return new Vec3(
 			transformer.apply(x.evaluate()),
 			transformer.apply(y.evaluate()),

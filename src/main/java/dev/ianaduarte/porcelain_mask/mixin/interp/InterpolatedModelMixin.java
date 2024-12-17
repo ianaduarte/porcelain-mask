@@ -49,12 +49,12 @@ public abstract class InterpolatedModelMixin extends Model implements Interpolat
 		for(ModelPart part : allParts) {
 			//god forbid a language have proper structs
 			tmp.fetch(animData, offset);
-			part.x = Mth.lerp(0.2f, tmp.xPos, part.x);
-			part.y = Mth.lerp(0.2f, tmp.yPos, part.y);
-			part.z = Mth.lerp(0.2f, tmp.zPos, part.z);
-			part.xRot = Mth.rotLerpRad(0.2f, tmp.xRot, part.xRot);
-			part.yRot = Mth.rotLerpRad(0.2f, tmp.yRot, part.yRot);
-			part.zRot = Mth.rotLerpRad(0.2f, tmp.zRot, part.zRot);
+			part.x = Mth.lerp(0.25f, tmp.xPos, part.x);
+			part.y = Mth.lerp(0.25f, tmp.yPos, part.y);
+			part.z = Mth.lerp(0.25f, tmp.zPos, part.z);
+			part.xRot = Mth.rotLerpRad(0.25f, tmp.xRot, part.xRot);
+			part.yRot = Mth.rotLerpRad(0.25f, tmp.yRot, part.yRot);
+			part.zRot = Mth.rotLerpRad(0.25f, tmp.zRot, part.zRot);
 			
 			tmp.fetch(part);
 			tmp.set(animData, offset);

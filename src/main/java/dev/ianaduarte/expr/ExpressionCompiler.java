@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 public class ExpressionCompiler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExpressionCompiler.class);
@@ -100,7 +101,7 @@ public class ExpressionCompiler {
 	
 	
 	public synchronized Expression compile(String expression) {
-		Map<String, Double> variables = new HashMap<>();
+		Map<String, Double> variables = new HashMap<>(this.variables.size());
 		this.variables.forEach((var) -> variables.put(var, 0.0));
 		this.expression = expression.trim();
 		this.at = 0;
@@ -296,29 +297,22 @@ public class ExpressionCompiler {
 		while(ch == ' ') ch = this.expression.charAt(++at);
 		
 		if(Character.isDigit(ch) || ch == '.') {
-			if(lastToken != null && (!lastToken.type.isOperator() && !lastToken.type.isOpening() && !lastToken.type.isComma())) {
-				lastToken = new CharToken(Token.Type.OPERATOR, '*');
-				return;
-			}
-			parseNumber();
+			tryImplicitMul(this::parseNumber);
 			return;
 		}
 		if(Character.isAlphabetic(ch) || ch == '_') {
-			if(lastToken != null && (!lastToken.type.isOperator() && !lastToken.type.isOpening() && !lastToken.type.isComma())) {
-				lastToken = new CharToken(Token.Type.OPERATOR, '*');
-				return;
-			}
-			parseReference();
+			tryImplicitMul(this::parseReference);
 			return;
 		}
 		switch(ch) {
 			case ',' -> parseChar(Token.Type.COMMA);
-			case '(' -> parseChar(Token.Type.LPAREN);
 			case ')' -> parseChar(Token.Type.RPAREN);
-			case '[' -> parseChar(Token.Type.LBRACE);
 			case ']' -> parseChar(Token.Type.RBRACE);
-			case '{' -> parseChar(Token.Type.LCURLY);
 			case '}' -> parseChar(Token.Type.RCURLY);
+			
+			case '(' -> tryImplicitMul(() -> parseChar(Token.Type.LPAREN));
+			case '[' -> tryImplicitMul(() -> parseChar(Token.Type.LBRACE));
+			case '{' -> tryImplicitMul(() -> parseChar(Token.Type.LCURLY));
 			case '+', '-', '*', '/', '%', '^' -> parseChar(Token.Type.OPERATOR);
 			default -> throw new IllegalArgumentException("Unable to parse char '" + ch + "' (Code:" + (int) ch + ") at [" + at + "]");
 		}
@@ -372,6 +366,13 @@ public class ExpressionCompiler {
 			this.at--;
 		}
 		lastToken = new NumberToken(Double.parseDouble(expression.substring(start, start + length)));
+	}
+	private void tryImplicitMul(Runnable fallback) {
+		if(lastToken != null && (!lastToken.type.isOperator() && !lastToken.type.isOpening() && !lastToken.type.isComma() && lastToken.type != Token.Type.FUNCTION)) {
+			lastToken = new CharToken(Token.Type.OPERATOR, '*');
+			return;
+		}
+		fallback.run();
 	}
 	
 	private boolean isExp(char ch) {

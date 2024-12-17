@@ -42,7 +42,6 @@ public sealed interface Transform {
 	boolean isEmpty();
 	Vector3f getPos(Map<String, Double> variables, boolean mirror);
 	Vector3f getRot(Map<String, Double> variables, boolean mirror);
-	Quaternionf getQRot(Map<String, Double> variables, boolean mirror);
 	void apply(ModelPart part, Map<String, Double> variables, boolean mirror);
 	void apply(PoseStack poseStack, Map<String, Double> variables, boolean mirror);
 	
@@ -56,25 +55,13 @@ public sealed interface Transform {
 		private final Quaternionf compositeRotationMirror;
 		
 		public Static(Dynamic dynamic) {
-			this.overridesTransforms = dynamic.overridesTransforms;
-			this.position = dynamic.position.toVec3();
-			this.rotation = dynamic.rotation.toVec3(PorcelainMth::toRadians);
-			this.compositeRotation = new Quaternionf()
-				.rotationZ((float)this.rotation.z)
-				.rotateX((float)this.rotation.x)
-				.rotateY((float)this.rotation.y);
-			this.compositeRotationMirror = new Quaternionf(this.compositeRotation);
-			this.compositeRotationMirror.y *= -1;
-			this.compositeRotationMirror.z *= -1;
+			this(dynamic.overridesTransforms, dynamic.position.toVec3(), dynamic.rotation.toVec3(PorcelainMth::toRadians));
 		}
 		public Static(boolean overridesTransforms, Vec3 position, Vec3 rotation) {
 			this.overridesTransforms = overridesTransforms;
 			this.position = position;
 			this.rotation = rotation;
-			this.compositeRotation = new Quaternionf()
-				.rotationZ((float)rotation.z)
-				.rotateX((float)rotation.x)
-				.rotateY((float)rotation.y);
+			this.compositeRotation = new Quaternionf().rotationZ((float)rotation.z).rotateX((float)rotation.x).rotateY((float)rotation.y);
 			this.compositeRotationMirror = new Quaternionf(this.compositeRotation);
 			this.compositeRotationMirror.y *= -1;
 			this.compositeRotationMirror.z *= -1;
@@ -107,16 +94,15 @@ public sealed interface Transform {
 				(float)(this.rotation.z * mirrorFactor)
 			);
 		}
-		@Override
-		public Quaternionf getQRot(Map<String, Double> variables, boolean mirror) {
-			return mirror? this.compositeRotationMirror : this.compositeRotation;
-		}
 		
 		@Override
 		public void apply(ModelPart part, Map<String, Double> variables, boolean mirror) {
 			float mirrorFactor = mirror? -1 : 1;
 			
-			if(this.overridesTransforms) part.resetPose();
+			if(this.overridesTransforms) {
+				part.setRotation(0, 0, 0);
+				//part.resetPose();
+			}
 			part.xRot += (float)(this.rotation.x);
 			part.yRot += (float)(this.rotation.y) * mirrorFactor;
 			part.zRot += (float)(this.rotation.z) * mirrorFactor;
@@ -208,21 +194,18 @@ public sealed interface Transform {
 				(float)zRot
 			);
 		}
-		@Override
-		public Quaternionf getQRot(Map<String, Double> variables, boolean mirror) {
-			float mirrorFactor = mirror? -1 : 1;
-			
-			return new Quaternionf()
-				.rotationZ((float)PorcelainMth.toRadians(this.rotation.z().setVariables(variables).evaluate()) * mirrorFactor)
-				.rotationX((float)PorcelainMth.toRadians(this.rotation.x().setVariables(variables).evaluate()))
-				.rotationY((float)PorcelainMth.toRadians(this.rotation.y().setVariables(variables).evaluate()) * mirrorFactor);
-		}
 		
 		@Override
 		public void apply(ModelPart part, Map<String, Double> variables, boolean mirror) {
 			float mirrorFactor = mirror? -1 : 1;
 			
-			if(this.overridesTransforms) part.resetPose();
+			if(this.overridesTransforms) {
+				part.setRotation(0, 0, 0);
+				//part.resetPose();
+			}
+			//variables.put("armYaw", Math.toDegrees(part.yRot));
+			//variables.put("armPitch", Math.toDegrees(part.xRot));
+			//variables.put("armRoll", Math.toDegrees(part.zRot));
 			part.xRot += (float)(PorcelainMth.toRadians(this.rotation.x().setVariables(variables).evaluate()));
 			part.yRot += (float)(PorcelainMth.toRadians(this.rotation.y().setVariables(variables).evaluate())) * mirrorFactor;
 			part.zRot += (float)(PorcelainMth.toRadians(this.rotation.z().setVariables(variables).evaluate())) * mirrorFactor;

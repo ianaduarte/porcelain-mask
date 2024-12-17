@@ -18,6 +18,10 @@ public class PorcelainMth {
 	public static double toDegrees(double rad) { return rad * RAG2DEG; }
 	public static double toRadians(double deg) { return deg * DEG2RAD; }
 	
+	public static float toDegrees(float rad) { return (float)(rad * RAG2DEG); }
+	public static float toRadians(float deg) { return (float)(deg * DEG2RAD); }
+	
+	
 	public static double tsin(double t) {
 		double f = (t % Math.PI) / HALF_PI;
 		return (t % Math.TAU < Math.PI)? f : 1 - f;
@@ -42,27 +46,32 @@ public class PorcelainMth {
 	public static double sat(double x) {
 		return ((x % 1) + 1) % 1;
 	}
+	public static double smoothstep(double x, double edge0, double edge1) {
+		x = Math.clamp((x - edge0) / (edge1 - edge0), 0, 1);
+		return (x * x) * (3 - 2 * x);
+	}
 	
 	
 	public static final Map<String, Function> DEFAULT_EXPRESSSION_FUNCTIONS = Map.ofEntries(
-		Map.entry("sin"  , new Function(1, false){ @Override public double apply(double... args){ return Math.sin(args[0]); }}),
-		Map.entry("cos"  , new Function(1, false){ @Override public double apply(double... args){ return Math.cos(args[0]); }}),
-		Map.entry("lsin" , new Function(1, false){ @Override public double apply(double... args){ return tsin(args[0]); }}),
-		Map.entry("tcos" , new Function(1, false){ @Override public double apply(double... args){ return tcos(args[0]); }}),
-		Map.entry("tan"  , new Function(1, false){ @Override public double apply(double... args){ return Math.tan(args[0]); }}),
-		Map.entry("sqrt" , new Function(1, false){ @Override public double apply(double... args){ return Math.sqrt(args[0]); }}),
-		Map.entry("cbrt" , new Function(1, false){ @Override public double apply(double... args){ return Math.cbrt(args[0]); }}),
-		Map.entry("nrt"  , new Function(2, false){ @Override public double apply(double... args){ return Math.pow(args[0], 1 / args[0]); }}),
-		Map.entry("pow"  , new Function(2, false){ @Override public double apply(double... args){ return Math.pow(args[0], args[1]); }}),
-		Map.entry("sqr"  , new Function(1, false){ @Override public double apply(double... args){ return args[0] * args[0]; }}),
-		Map.entry("floor", new Function(1, false){ @Override public double apply(double... args){ return Math.floor(args[0]); }}),
-		Map.entry("round", new Function(1, false){ @Override public double apply(double... args){ return Math.round(args[0]); }}),
-		Map.entry("ceil" , new Function(1, false){ @Override public double apply(double... args){ return Math.ceil(args[0]); }}),
-		Map.entry("torad", new Function(1, false){ @Override public double apply(double... args){ return toRadians(args[0]); }}),
-		Map.entry("todeg", new Function(1, false){ @Override public double apply(double... args){ return toDegrees(args[0]); }}),
-		Map.entry("grad" , new Function(3, true ){ @Override public double apply(double... args){ return grad(args[0], Arrays.copyOfRange(args, 1, args.length)); }}),
-		Map.entry("wrap" , new Function(3, false){ @Override public double apply(double... args){ return wrap(args[0], args[1], args[2]); }}),
-		Map.entry("sat"  , new Function(1, false){ @Override public double apply(double... args){ return sat(args[0]); }})
+		Map.entry("sin"       , new Function(1, false){ @Override public double apply(double... args){ return Math.sin(args[0]); }}),
+		Map.entry("cos"       , new Function(1, false){ @Override public double apply(double... args){ return Math.cos(args[0]); }}),
+		Map.entry("lsin"      , new Function(1, false){ @Override public double apply(double... args){ return tsin(args[0]); }}),
+		Map.entry("tcos"      , new Function(1, false){ @Override public double apply(double... args){ return tcos(args[0]); }}),
+		Map.entry("tan"       , new Function(1, false){ @Override public double apply(double... args){ return Math.tan(args[0]); }}),
+		Map.entry("sqrt"      , new Function(1, false){ @Override public double apply(double... args){ return Math.sqrt(args[0]); }}),
+		Map.entry("cbrt"      , new Function(1, false){ @Override public double apply(double... args){ return Math.cbrt(args[0]); }}),
+		Map.entry("nrt"       , new Function(2, false){ @Override public double apply(double... args){ return Math.pow(args[0], 1 / args[0]); }}),
+		Map.entry("pow"       , new Function(2, false){ @Override public double apply(double... args){ return Math.pow(args[0], args[1]); }}),
+		Map.entry("sqr"       , new Function(1, false){ @Override public double apply(double... args){ return args[0] * args[0]; }}),
+		Map.entry("floor"     , new Function(1, false){ @Override public double apply(double... args){ return Math.floor(args[0]); }}),
+		Map.entry("round"     , new Function(1, false){ @Override public double apply(double... args){ return Math.round(args[0]); }}),
+		Map.entry("ceil"      , new Function(1, false){ @Override public double apply(double... args){ return Math.ceil(args[0]); }}),
+		Map.entry("torad"     , new Function(1, false){ @Override public double apply(double... args){ return toRadians(args[0]); }}),
+		Map.entry("todeg"     , new Function(1, false){ @Override public double apply(double... args){ return toDegrees(args[0]); }}),
+		Map.entry("grad"      , new Function(3, true ){ @Override public double apply(double... args){ return grad(args[0], Arrays.copyOfRange(args, 1, args.length)); }}),
+		Map.entry("wrap"      , new Function(3, false){ @Override public double apply(double... args){ return wrap(args[0], args[1], args[2]); }}),
+		Map.entry("sat"       , new Function(1, false){ @Override public double apply(double... args){ return sat(args[0]); }}),
+		Map.entry("smoothstep", new Function(3, false){ @Override public double apply(double... args){ return smoothstep(args[0], args[1], args[2]); }})
 	);
 	public static Map<String, Double> DEFAULT_EXPRESSION_CONSTANTS = Map.ofEntries(
 		Map.entry("QPI", QUARTER_PI),

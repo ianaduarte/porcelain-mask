@@ -13,6 +13,7 @@
 		"interp.LivingEntityRendererMixin",
 		"pose.ArmedRenderStateMixin",
 		"pose.HumanoidModelMixin",
+		"pose.ModelPartMixin",
 		"pose.ModelWrapperMixin",
 		"pose.StackRenderStateAccessor",
 		"pose.StackRenderStateAccessor$LayerRenderStateAccessor",

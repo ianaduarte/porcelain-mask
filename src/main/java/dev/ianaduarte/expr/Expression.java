@@ -79,7 +79,7 @@ public class Expression {
 		return this.stringRep == null? "" : this.stringRep;
 	}
 	
-	public boolean isStatic() {
+	public boolean isConstant() {
 		return this.op instanceof NumNode;
 	}
 	public boolean isEmpty() {

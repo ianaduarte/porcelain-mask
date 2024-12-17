@@ -1,6 +1,8 @@
 package dev.ianaduarte.porcelain_mask.mixin.pose;
 
+import dev.ianaduarte.porcelain_mask.PorcelainMask;
 import dev.ianaduarte.porcelain_mask.model.pose.ArmPose;
+import dev.ianaduarte.porcelain_mask.model.pose.ArmSwing;
 import dev.ianaduarte.porcelain_mask.model.pose.PosingData;
 import dev.ianaduarte.porcelain_mask.util.ExtArmedRenderState;
 import dev.ianaduarte.porcelain_mask.util.ExtHumanoidModel;
@@ -72,18 +74,27 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> implements ExtHum
 			"swingDelta", (double)renderState.attackTime,
 			"swingAmount", PorcelainMth.tsin(renderState.attackTime * Math.PI)
 		);
-		Map<String, Double> mainhandVariables = new HashMap<>(sharedVariables);
-		mainhandVariables.put("armYaw", Math.toDegrees(mainhand.yRot));
-		mainhandVariables.put("armPitch", Math.toDegrees(mainhand.xRot));
-		mainhandVariables.put("armRoll", Math.toDegrees(mainhand.zRot));
+		//these get modified inside apply and swing
+		//Map<String, Double> mainhandVariables = new HashMap<>(sharedVariables);
+		//Map<String, Double> offhandVariables = new HashMap<>(sharedVariables);
 		
-		Map<String, Double> offhandVariables = new HashMap<>(sharedVariables);
-		offhandVariables.put("armYaw", Math.toDegrees(offhand.yRot));
-		offhandVariables.put("armPitch", Math.toDegrees(offhand.xRot));
-		offhandVariables.put("armRoll", Math.toDegrees(offhand.zRot));
 		
-		ArmPose mainPose = preferMain(this.mainhandData.inMainhand().mainhand(), this.offhandData.inOffhand().mainhand());
-		ArmPose offPose = preferMain(this.mainhandData.inMainhand().offhand(), this.offhandData.inOffhand().offhand());
+		ArmPose mainPose, offPose;
+		if(renderState.attackTime <= 0) {
+			mainPose = preferMain(this.mainhandData.inMainhand().mainhand(), this.offhandData.inOffhand().mainhand());
+			offPose = preferMain(this.mainhandData.inMainhand().offhand(), this.offhandData.inOffhand().offhand());
+			
+		} else {
+			mainPose = preferMain(usingOffhand, this.mainhandData.inMainhand().mainhandSwing(), this.offhandData.inOffhand().mainhandSwing());
+			offPose  = preferMain(usingOffhand, this.mainhandData.inMainhand().offhandSwing(), this.offhandData.inOffhand().offhandSwing());
+		}
+		mainPose.transform().apply(mainhand, sharedVariables, leftHanded);
+		offPose.transform().apply(offhand, sharedVariables, leftHanded);
+		float mirrorFactor = leftHanded? -1 : 1;
+		AnimationUtils.bobModelPart(mainhand, renderState.ageInTicks, mainPose.bobFactor() * mirrorFactor);
+		AnimationUtils.bobModelPart(offhand, renderState.ageInTicks, offPose.bobFactor() * -mirrorFactor);
+		/*ArmPose mainPose = preferMain(this.mainhandData.inMainhand().mainhand(), this.offhandData.inOffhand().mainhand());
+		ArmPose   offPose = preferMain(this.mainhandData.inMainhand().offhand(), this.offhandData.inOffhand().offhand());
 		mainPose.transform().apply(mainhand, mainhandVariables, leftHanded);
 		offPose.transform().apply(offhand, offhandVariables, leftHanded);
 		
@@ -91,45 +102,19 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> implements ExtHum
 		AnimationUtils.bobModelPart(mainhand, renderState.ageInTicks, mainPose.bobFactor() * mirrorFactor);
 		AnimationUtils.bobModelPart(offhand, renderState.ageInTicks, offPose.bobFactor() * -mirrorFactor);
 		
+		if(renderState.attackTime < 0) return;
+		ArmPose mainSwing = preferMain(usingOffhand, this.mainhandData.inMainhand().mainhandSwing(), this.offhandData.inOffhand().mainhandSwing());
+		ArmPose offSwing  = preferMain(usingOffhand, this.mainhandData.inMainhand().offhandSwing(), this.offhandData.inOffhand().offhandSwing());
 		
-		/*if(renderState.attackTime > 0) {
-			//preferMain(mainhandData.inMainhand().mainhandSwing(), offhandData.inOffhand().mainhandSwing()).swing(mainhand, renderState.attackTime, mainhandVariables, leftHanded);
-			//preferMain(mainhandData.inMainhand().offhandSwing(), offhandData.inOffhand().offhandSwing()).swing(offhand, renderState.attackTime, offhandVariables, leftHanded);
-			
-			if(!usingOffhand && mainhandData.inMainhand().hasSwings()) {
-				Pair<ArmSwing, ArmSwing> mainhandSwings = mainhandData.inMainhand().getSwings();
-				
-				if(!mainhandSwings.getFirst().isEmpty() ) mainhandSwings.getFirst().swing(mainhand, renderState.attackTime, mainhandVariables, leftHanded);
-				if(!mainhandSwings.getSecond().isEmpty()) mainhandSwings.getSecond().swing(offhand, renderState.attackTime, offhandVariables, leftHanded);
-			}
-			else if(offhandData.inOffhand().hasSwings()) {
-				Pair<ArmSwing, ArmSwing> offhandSwings  = offhandData.inMainhand().getSwings();
-				
-				if(!offhandSwings.getFirst().isEmpty() ) offhandSwings.getFirst().swing(mainhand, renderState.attackTime, mainhandVariables, leftHanded);
-				if(!offhandSwings.getSecond().isEmpty()) offhandSwings.getSecond().swing(offhand, renderState.attackTime, offhandVariables, leftHanded);
-			}
-		}*/
+		mainSwing.apply(mainhand, renderState.attackTime, mainhandVariables, leftHanded);
+		offSwing.apply(offhand, renderState.attackTime, offhandVariables, leftHanded);*/
 	}
 	@Unique
 	ArmPose preferMain(ArmPose mainhand, ArmPose offhand) {
 		return mainhand.isEmpty()? offhand : mainhand;
 	}
-	
-	
-	/*@Redirect(
-		method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/AnimationUtils;bobModelPart(Lnet/minecraft/client/model/geom/ModelPart;FF)V", ordinal = 1)
-	)
-	private void changeLeftBob(ModelPart modelPart, float ageInTicks, float multiplier, @Local(argsOnly = true) T humanoidRenderState) {
-		//ExtendedArmedRenderState extRenderState = (ExtendedArmedRenderState) humanoidRenderState;
-		//AnimationUtils.bobModelPart(leftArm, ageInTicks, -extRenderState.getPose(HumanoidArm.LEFT).bobFactor());
+	@Unique
+	ArmPose preferMain(boolean usingOffhand, ArmPose mainhand, ArmPose offhand) {
+		return (mainhand.isEmpty() || usingOffhand)? offhand : mainhand;
 	}
-	@Redirect(
-		method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/AnimationUtils;bobModelPart(Lnet/minecraft/client/model/geom/ModelPart;FF)V", ordinal = 0)
-	)
-	private void changeRightBob(ModelPart modelPart, float ageInTicks, float multiplier, @Local(argsOnly = true) T humanoidRenderState) {
-		//ExtendedArmedRenderState extRenderState = (ExtendedArmedRenderState) humanoidRenderState;
-		//AnimationUtils.bobModelPart(rightArm, ageInTicks, extRenderState.getPose(HumanoidArm.RIGHT).bobFactor());
-	}*/
 }
